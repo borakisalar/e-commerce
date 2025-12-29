@@ -91,14 +91,14 @@ public class LoginWindow extends JFrame {
         if (user != null) {
             String role = user.getRole();
             int userId = user.getId();
-            String name = user.getUsername();
+            String fullName = user.getFullName(); // Use First + Last Name
 
             if (role.equalsIgnoreCase("Customer")) {
-                new CustomerDashboard(userId, name).setVisible(true);
+                new CustomerDashboard(userId, fullName).setVisible(true);
             } else if (role.equalsIgnoreCase("Seller")) {
-                new SellerDashboard(userId, name).setVisible(true);
+                new SellerDashboard(userId, fullName).setVisible(true);
             } else if (role.equalsIgnoreCase("Administrator")) {
-                new AdminDashboard(userId, name).setVisible(true);
+                new AdminDashboard(userId, fullName).setVisible(true);
             }
             this.dispose();
         } else {

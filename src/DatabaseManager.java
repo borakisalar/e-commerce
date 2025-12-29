@@ -19,13 +19,14 @@ public class DatabaseManager {
 
     // AUTHENTICATION LOGIC
     public static User authenticate(String username, String password) {
-        String query = "SELECT UserID, Username, UserRole FROM USERS WHERE Username = ? AND PasswordHash = ?";
+        String hashedPassword = PasswordHasher.hashPassword(password);
+        String query = "SELECT UserID, Username, UserRole, FirstName, LastName FROM USERS WHERE Username = ? AND PasswordHash = ?";
 
         try (Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setString(1, username);
-            pstmt.setString(2, password); // Note: In real apps, compare hashes!
+            pstmt.setString(2, hashedPassword);
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -33,7 +34,9 @@ public class DatabaseManager {
                 return new User(
                         rs.getInt("UserID"),
                         rs.getString("Username"),
-                        rs.getString("UserRole"));
+                        rs.getString("UserRole"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,6 +47,7 @@ public class DatabaseManager {
     // REGISTRATION LOGIC
     public static boolean registerUser(String username, String email, String password, String role, String firstName,
             String lastName) {
+        String hashedPassword = PasswordHasher.hashPassword(password);
         String query = "INSERT INTO USERS (Username, Email, PasswordHash, UserRole, FirstName, LastName) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
@@ -51,7 +55,7 @@ public class DatabaseManager {
 
             pstmt.setString(1, username);
             pstmt.setString(2, email);
-            pstmt.setString(3, password);
+            pstmt.setString(3, hashedPassword);
             pstmt.setString(4, role);
             pstmt.setString(5, firstName);
             pstmt.setString(6, lastName);

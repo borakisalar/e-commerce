@@ -1,10 +1,12 @@
 -- Insert Users
 INSERT INTO USERS (Username, Email, PasswordHash, UserRole, FirstName, LastName)
 VALUES
-('admin.arda', 'arda.ayas@ozu.edu.tr', 'hashed_pw_1', 'Administrator', 'Arda', 'Ayas'),
-('seller.bora', 'bora.kisalar@ozu.edu.tr', 'hashed_pw_2', 'Seller', 'Bora', 'Kisalar'),
-('customer.ali', 'ali.yilmaz@gmail.com', 'hashed_pw_3', 'Customer', 'Ali', 'Yilmaz'),
-('customer.ayse', 'ayse.demir@gmail.com', 'hashed_pw_4', 'Customer', 'Ayse', 'Demir');
+('arda_admin', 'arda.ayas@ozu.edu.tr', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'Administrator', 'Arda', 'Ayas'),
+('bora_k', 'bora.kisalar@ozu.edu.tr', '2a76110d06bcc4fd437337b984131cfa82db9f792e3e2340acef9f3066b264e0', 'Seller', 'Bora', 'Kisalar'),
+('ali_yilmaz', 'ali.yilmaz@gmail.com', 'b041c0aeb35bb0fa4aa668ca5a920b590196fdaf9a00eb852c9b7f4d123cc6d6', 'Customer', 'Ali', 'Yilmaz'),
+('ayse_demir', 'ayse.demir@gmail.com', 'c608a2dcbef9928f47794533a21cde9f2effe2932cf497406b7b496e3b075232', 'Customer', 'Ayse', 'Demir');
+
+
 
 
 INSERT INTO ADDRESSES (UserID, AddressType, StreetAddress, City, District, Neighborhood, ZipCode, Country)
