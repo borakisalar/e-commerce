@@ -2,9 +2,9 @@ import java.sql.*;
 
 public class DatabaseManager {
     // Database credentials - Update these to match your MySQL configuration
-    private static final String URL = "jdbc:mysql://192.168.1.152:3306/ecommerce_db";
+    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "_9q@2$KNf>xpVyW-;5)o"; // Update this!
+    private static final String PASSWORD = "asdnjdbjhdbnsajkdb2193857**189AA"; // Update this!
 
     // Static connection method
     public static Connection getConnection() throws SQLException {
@@ -73,4 +73,5 @@ public class DatabaseManager {
             return false;
         }
     }
+
 }

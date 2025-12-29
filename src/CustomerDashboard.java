@@ -13,30 +13,37 @@ public class CustomerDashboard extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main Container
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
         mainPanel.setBackground(new Color(240, 240, 240));
 
-        // Welcome Label
         JLabel welcomeLabel = new JLabel("Welcome, " + username);
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         mainPanel.add(welcomeLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Menu Buttons
-        mainPanel.add(createMenuButton("View Catalogs"));
+        JButton btnCatalogs = createMenuButton("View Catalogs");
+        btnCatalogs.addActionListener(e -> {
+            new ViewCatalogWindow(loggedInUserId).setVisible(true);
+        });
+        mainPanel.add(btnCatalogs);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("View Ongoing Order"));
+        JButton btnCart = createMenuButton("View Ongoing Order");
+        btnCart.addActionListener(e -> new ViewCartWindow(loggedInUserId).setVisible(true));
+        mainPanel.add(btnCart);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("View Order History"));
+        JButton btnHistory = createMenuButton("View Order History");
+        btnHistory.addActionListener(e -> new ViewOrderHistoryWindow(loggedInUserId).setVisible(true));
+        mainPanel.add(btnHistory);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("Customer Statistics"));
+        JButton btnStats = createMenuButton("Customer Statistics");
+        btnStats.addActionListener(e -> new ViewStatsWindow(loggedInUserId).setVisible(true));
+        mainPanel.add(btnStats);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // Logout Button
@@ -56,10 +63,10 @@ public class CustomerDashboard extends JFrame {
     private JButton createMenuButton(String text) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(450, 80)); // Large buttons as in image
+        button.setMaximumSize(new Dimension(450, 80));
         button.setFont(new Font("SansSerif", Font.BOLD, 16));
         button.setFocusPainted(false);
-        // Action listeners can be added here later to open specific panels/windows
+
         return button;
     }
 }
