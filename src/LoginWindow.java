@@ -16,31 +16,27 @@ public class LoginWindow extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
+        // Main panel with GridBagLayout to center the content panel
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
 
-        gbc.gridwidth = 1;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        mainPanel.add(new JLabel("Username:"), gbc);
+        // Content panel to hold inputs and buttons
+        JPanel contentPanel = new JPanel(new BorderLayout(10, 20));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // Use a simple GridLayout for the form inputs (2 rows, 2 columns)
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2, 20, 10));
+
+        inputPanel.add(new JLabel("Username:"));
         usernameField = new JTextField(15);
-        gbc.gridx = 1;
-        mainPanel.add(usernameField, gbc);
+        inputPanel.add(usernameField);
 
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        mainPanel.add(new JLabel("Password:"), gbc);
-
+        inputPanel.add(new JLabel("Password:"));
         passwordField = new JPasswordField(15);
-        gbc.gridx = 1;
-        mainPanel.add(passwordField, gbc);
+        inputPanel.add(passwordField);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        contentPanel.add(inputPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         loginButton = new JButton("Login");
         loginButton.setPreferredSize(new Dimension(100, 35));
@@ -51,11 +47,9 @@ public class LoginWindow extends JFrame {
         buttonPanel.add(loginButton);
         buttonPanel.add(signUpButton);
 
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        mainPanel.add(buttonPanel, gbc);
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        mainPanel.add(contentPanel);
         add(mainPanel);
 
         // Event Listeners
