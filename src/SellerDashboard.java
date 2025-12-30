@@ -27,13 +27,20 @@ public class SellerDashboard extends JFrame {
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // Menu Buttons
-        mainPanel.add(createMenuButton("Manage Catalog & Products"));
+        // Menu Buttons
+        JButton manageBtn = createMenuButton("Manage Catalog & Products");
+        manageBtn.addActionListener(e -> new ManageProductsWindow(sellerId).setVisible(true));
+        mainPanel.add(manageBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("View Orders"));
+        JButton ordersBtn = createMenuButton("View Orders");
+        ordersBtn.addActionListener(e -> new ManageOrdersWindow(sellerId).setVisible(true));
+        mainPanel.add(ordersBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("Seller Statistics"));
+        JButton statsBtn = createMenuButton("Seller Statistics");
+        statsBtn.addActionListener(e -> new SellerStatsWindow(sellerId).setVisible(true));
+        mainPanel.add(statsBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // Logout Button
