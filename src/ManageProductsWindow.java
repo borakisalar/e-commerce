@@ -35,16 +35,19 @@ public class ManageProductsWindow extends JFrame {
         JButton addBtn = new JButton("Add Product");
         JButton updateBtn = new JButton("Update Product");
         JButton removeBtn = new JButton("Remove Product");
+        JButton viewReviewsBtn = new JButton("View Reviews");
         JButton refreshBtn = new JButton("Refresh");
 
         addBtn.addActionListener(e -> showAddProductDialog());
         updateBtn.addActionListener(e -> showUpdateProductDialog());
         removeBtn.addActionListener(e -> removeSelectedProduct());
+        viewReviewsBtn.addActionListener(e -> showProductReviews());
         refreshBtn.addActionListener(e -> loadProducts());
 
         btnPanel.add(addBtn);
         btnPanel.add(updateBtn);
         btnPanel.add(removeBtn);
+        btnPanel.add(viewReviewsBtn);
         btnPanel.add(refreshBtn);
         add(btnPanel, BorderLayout.SOUTH);
     }
@@ -180,5 +183,36 @@ public class ManageProductsWindow extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error removing product: " + e.getMessage());
             }
         }
+    }
+
+    private void showProductReviews() {
+        int row = productsTable.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Select a product to see reviews.");
+            return;
+        }
+
+        int productId = (int) tableModel.getValueAt(row, 0);
+        String productName = (String) tableModel.getValueAt(row, 1);
+
+        CatalogService catalogService = new CatalogService();
+        java.util.List<Object[]> reviews = catalogService.getProductReviews(productId);
+
+        if (reviews.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No reviews yet for " + productName);
+            return;
+        }
+
+        String[] revCols = { "Rating", "Comment", "User", "Date" };
+        DefaultTableModel revModel = new DefaultTableModel(revCols, 0);
+        for (Object[] rev : reviews) {
+            revModel.addRow(rev);
+        }
+
+        JTable revTable = new JTable(revModel);
+        JScrollPane scroll = new JScrollPane(revTable);
+        scroll.setPreferredSize(new Dimension(500, 300));
+
+        JOptionPane.showMessageDialog(this, scroll, "Reviews for " + productName, JOptionPane.PLAIN_MESSAGE);
     }
 }

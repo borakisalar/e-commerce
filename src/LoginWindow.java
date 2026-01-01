@@ -16,14 +16,11 @@ public class LoginWindow extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main panel with GridBagLayout to center the content panel
         JPanel mainPanel = new JPanel(new GridBagLayout());
 
-        // Content panel to hold inputs and buttons
         JPanel contentPanel = new JPanel(new BorderLayout(10, 20));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Use a simple GridLayout for the form inputs (2 rows, 2 columns)
         JPanel inputPanel = new JPanel(new GridLayout(2, 2, 20, 10));
 
         inputPanel.add(new JLabel("Username:"));
@@ -52,7 +49,6 @@ public class LoginWindow extends JFrame {
         mainPanel.add(contentPanel);
         add(mainPanel);
 
-        // Event Listeners
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -79,13 +75,12 @@ public class LoginWindow extends JFrame {
             return;
         }
 
-        // --- REAL DATABASE LOGIC ---
         User user = DatabaseManager.authenticate(username, password);
 
         if (user != null) {
             String role = user.getRole();
             int userId = user.getId();
-            String fullName = user.getFullName(); // Use First + Last Name
+            String fullName = user.getFullName();
 
             if (role.equalsIgnoreCase("Customer")) {
                 new CustomerDashboard(userId, fullName).setVisible(true);
@@ -102,7 +97,7 @@ public class LoginWindow extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Set System Look and Feel for better aesthetics
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {

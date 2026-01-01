@@ -18,14 +18,6 @@ public class SellerStatsWindow extends JFrame {
 
         StringBuilder sb = new StringBuilder();
         sb.append(service.getSellerStatistics(sellerId));
-        sb.append("\n\n=== Product Reviews ===\n\n");
-        List<String> reviews = service.getProductReviews(sellerId);
-        if (reviews.isEmpty())
-            sb.append("No reviews yet.\n");
-        else {
-            for (String r : reviews)
-                sb.append(r).append("\n\n");
-        }
 
         area.setText(sb.toString());
         add(new JScrollPane(area), BorderLayout.CENTER);

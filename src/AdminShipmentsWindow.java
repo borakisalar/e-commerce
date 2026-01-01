@@ -1,49 +1,79 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.sql.*;
+import java.awt.*;
+import java.sql.SQLException;
+import java.util.List;
+
 public class AdminShipmentsWindow extends JFrame {
-    private DefaultTableModel tableModel;
-    private JTable shipmentsTable;
-    private JButton updateStatusButton;
+    private AdminShipmentService service = new AdminShipmentService();
+    private JTable table;
+    private DefaultTableModel model;
 
     public AdminShipmentsWindow() {
-        setTitle("Shipments");
-        setSize(600, 400);
+        setTitle("Manage Shipments");
+        setSize(800, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        setContentPane(contentPanel);
+        model = new DefaultTableModel(
+                new Object[] { "ID", "Order ID", "Tracking #", "Shipment Status", "Payment Status" }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        table = new JTable(model);
+        add(new JScrollPane(table), BorderLayout.CENTER);
 
-        tableModel = new DefaultTableModel(new String[]{"ID", "Order", "Track", "Status"}, 0);
-        shipmentsTable = new JTable(tableModel);
+        JPanel buttonPanel = new JPanel();
+        JButton updateBtn = new JButton("Update Status");
+        JButton refreshBtn = new JButton("Refresh");
 
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT ShipmentID, OrderID, TrackingNumber, ShipmentStatus FROM SHIPMENTS");
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) tableModel.addRow(new Object[]{rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4)});
-        } catch (Exception e) {}
+        updateBtn.addActionListener(e -> updateStatus());
+        refreshBtn.addActionListener(e -> loadData());
 
-        updateStatusButton = new JButton("Update Status");
-        updateStatusButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        updateStatusButton.addActionListener(e -> UpdateStatus());
+        buttonPanel.add(updateBtn);
+        buttonPanel.add(refreshBtn);
+        add(buttonPanel, BorderLayout.SOUTH);
 
-        contentPanel.add(new JScrollPane(shipmentsTable));
-        contentPanel.add(updateStatusButton);
+        loadData();
     }
 
-    private void UpdateStatus() {
-        int selectedRow = shipmentsTable.getSelectedRow();
-        if (selectedRow != -1) {
-            String newStatus = JOptionPane.showInputDialog("Status:");
-            if (newStatus != null) {
-                try (Connection conn = DatabaseManager.getConnection();
-                     PreparedStatement stmt = conn.prepareStatement("UPDATE SHIPMENTS SET ShipmentStatus = ? WHERE ShipmentID = ?")) {
-                    stmt.setString(1, newStatus);
-                    stmt.setInt(2, (int)tableModel.getValueAt(selectedRow, 0));
-                    stmt.executeUpdate();
-                } catch (Exception ex) {}
+    private void loadData() {
+        model.setRowCount(0);
+        List<Object[]> shipments = service.getAllShipments();
+        for (Object[] row : shipments) {
+            model.addRow(row);
+        }
+    }
+
+    private void updateStatus() {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a shipment.");
+            return;
+        }
+
+        int id = (int) model.getValueAt(row, 0);
+        String currentPayment = (String) model.getValueAt(row, 4);
+
+        if (!"completed".equalsIgnoreCase(currentPayment)) {
+            JOptionPane.showMessageDialog(this, "Error: You can only update shipments when payment is 'completed'.");
+            return;
+        }
+
+        String[] statuses = { "processing", "shipped", "in_transit", "delivered" };
+        String newStatus = (String) JOptionPane.showInputDialog(this, "Select new status:", "Update Shipment",
+                JOptionPane.QUESTION_MESSAGE, null, statuses, model.getValueAt(row, 3));
+
+        if (newStatus != null) {
+            try {
+                service.updateShipmentStatus(id, newStatus);
+                loadData();
+                JOptionPane.showMessageDialog(this, "Status updated successfully.");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
         }
     }

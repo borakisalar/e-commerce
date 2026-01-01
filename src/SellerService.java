@@ -219,31 +219,4 @@ public class SellerService {
         }
         return sb.toString();
     }
-
-    public List<String> getProductReviews(int sellerId) {
-        List<String> reviews = new ArrayList<>();
-        String query = "SELECT p.ProductName, r.Rating, r.Comment, u.Username " +
-                "FROM REVIEWS r " +
-                "JOIN ORDER_ITEMS oi ON r.OrderItemID = oi.OrderItemID " +
-                "JOIN PRODUCTS p ON oi.ProductID = p.ProductID " +
-                "JOIN CATALOGS c ON p.CatalogID = c.CatalogID " +
-                "JOIN USERS u ON r.CustomerID = u.UserID " +
-                "WHERE c.SellerID = ? " +
-                "ORDER BY r.ReviewDate DESC";
-        try (Connection conn = DatabaseManager.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, sellerId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                reviews.add(String.format("[%s] %d/5 by %s: %s",
-                        rs.getString("ProductName"),
-                        rs.getInt("Rating"),
-                        rs.getString("Username"),
-                        rs.getString("Comment")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return reviews;
-    }
 }

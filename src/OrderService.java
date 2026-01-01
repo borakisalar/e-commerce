@@ -1,4 +1,3 @@
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,8 @@ public class OrderService {
             productStmt.setInt(1, productId);
             ResultSet rsProduct = productStmt.executeQuery();
 
-            if (!rsProduct.next()) throw new SQLException("Product not found.");
+            if (!rsProduct.next())
+                throw new SQLException("Product not found.");
             double price = rsProduct.getDouble("Price");
             int productSellerId = rsProduct.getInt("SellerID");
 
@@ -45,10 +45,12 @@ public class OrderService {
                 createStmt.executeUpdate();
 
                 ResultSet rsKey = createStmt.getGeneratedKeys();
-                if (rsKey.next()) orderId = rsKey.getInt(1);
+                if (rsKey.next())
+                    orderId = rsKey.getInt(1);
             }
 
-            String insertItem = "INSERT INTO ORDER_ITEMS (OrderID, ProductID, Quantity, PurchasePrice) VALUES (?, ?, ?, ?) " +
+            String insertItem = "INSERT INTO ORDER_ITEMS (OrderID, ProductID, Quantity, PurchasePrice) VALUES (?, ?, ?, ?) "
+                    +
                     "ON DUPLICATE KEY UPDATE Quantity = Quantity + ?";
             PreparedStatement itemStmt = conn.prepareStatement(insertItem);
             itemStmt.setInt(1, orderId);
@@ -61,29 +63,39 @@ public class OrderService {
             conn.commit();
 
         } catch (SQLException ex) {
-            try { if (conn != null) conn.rollback(); } catch (SQLException e) { e.printStackTrace(); }
+            try {
+                if (conn != null)
+                    conn.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             throw ex;
         } finally {
-            if (conn != null) try { conn.close(); } catch (SQLException e) {}
+            if (conn != null)
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
         }
     }
 
     public List<Object[]> getCartItems(int customerId) {
         List<Object[]> cartItems = new ArrayList<>();
-        String query = "SELECT p.ProductName, oi.Quantity, oi.PurchasePrice, (oi.Quantity * oi.PurchasePrice) as Total " +
+        String query = "SELECT p.ProductName, oi.Quantity, oi.PurchasePrice, (oi.Quantity * oi.PurchasePrice) as Total "
+                +
                 "FROM ORDER_ITEMS oi " +
                 "JOIN PRODUCTS p ON oi.ProductID = p.ProductID " +
                 "JOIN ORDERS o ON oi.OrderID = o.OrderID " +
                 "WHERE o.CustomerID = ? AND o.OrderStatus = 'pending'";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, customerId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                cartItems.add(new Object[]{
+                cartItems.add(new Object[] {
                         rs.getString("ProductName"),
                         rs.getInt("Quantity"),
                         rs.getDouble("PurchasePrice"),
@@ -107,14 +119,16 @@ public class OrderService {
             stmt.setInt(1, customerId);
             ResultSet rs = stmt.executeQuery();
 
-            if (!rs.next()) throw new SQLException("No pending order found.");
+            if (!rs.next())
+                throw new SQLException("No pending order found.");
             int orderId = rs.getInt("OrderID");
 
             String verifyItems = "SELECT COUNT(*) FROM ORDER_ITEMS WHERE OrderID = ?";
             PreparedStatement vStmt = conn.prepareStatement(verifyItems);
             vStmt.setInt(1, orderId);
             ResultSet vRs = vStmt.executeQuery();
-            if(vRs.next() && vRs.getInt(1) == 0) throw new SQLException("Cannot submit empty order.");
+            if (vRs.next() && vRs.getInt(1) == 0)
+                throw new SQLException("Cannot submit empty order.");
 
             String updateTotal = "UPDATE ORDERS SET TotalAmount = (SELECT SUM(Quantity * PurchasePrice) FROM ORDER_ITEMS WHERE OrderID = ?) WHERE OrderID = ?";
             PreparedStatement upTotalStmt = conn.prepareStatement(updateTotal);
@@ -135,10 +149,15 @@ public class OrderService {
             conn.commit();
 
         } catch (SQLException ex) {
-            try { if (conn != null) conn.rollback(); } catch (SQLException e) {}
+            try {
+                if (conn != null)
+                    conn.rollback();
+            } catch (SQLException e) {
+            }
             throw ex;
         } finally {
-            if (conn != null) conn.close();
+            if (conn != null)
+                conn.close();
         }
     }
 
@@ -147,12 +166,12 @@ public class OrderService {
         String query = "SELECT OrderID, OrderDate, TotalAmount, OrderStatus FROM ORDERS WHERE CustomerID = ? ORDER BY OrderDate DESC";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, customerId);
             ResultSet rs = stmt.executeQuery();
 
-            while(rs.next()) {
+            while (rs.next()) {
                 history.add(new Object[] {
                         rs.getInt("OrderID"),
                         rs.getTimestamp("OrderDate"),
@@ -164,5 +183,41 @@ public class OrderService {
             ex.printStackTrace();
         }
         return history;
+    }
+
+    public List<Object[]> getOrderItems(int orderId) {
+        List<Object[]> items = new ArrayList<>();
+        String query = "SELECT oi.OrderItemID, p.ProductName, oi.Quantity, oi.PurchasePrice " +
+                "FROM ORDER_ITEMS oi " +
+                "JOIN PRODUCTS p ON oi.ProductID = p.ProductID " +
+                "WHERE oi.OrderID = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, orderId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                items.add(new Object[] {
+                        rs.getInt("OrderItemID"),
+                        rs.getString("ProductName"),
+                        rs.getInt("Quantity"),
+                        rs.getDouble("PurchasePrice")
+                });
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return items;
+    }
+
+    public void addReview(int orderItemId, int customerId, int rating, String comment) throws SQLException {
+        String query = "INSERT INTO REVIEWS (OrderItemID, CustomerID, Rating, Comment) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, orderItemId);
+            stmt.setInt(2, customerId);
+            stmt.setInt(3, rating);
+            stmt.setString(4, comment);
+            stmt.executeUpdate();
+        }
     }
 }

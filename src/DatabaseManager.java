@@ -2,10 +2,9 @@ import java.sql.*;
 
 public class DatabaseManager {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_db";
+    private static final String URL = "jdbc:mysql://192.168.1.164:3306/ecommerce_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "asdnjdbjhdbnsajkdb2193857**189AA";
-
+    private static final String PASSWORD = "_9q@2$KNf>xpVyW-;5)o";
 
     public static Connection getConnection() throws SQLException {
         try {
@@ -15,7 +14,6 @@ public class DatabaseManager {
         }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
-
 
     public static User authenticate(String username, String password) {
         String hashedPassword = PasswordHasher.hashPassword(password);
@@ -43,7 +41,6 @@ public class DatabaseManager {
         return null;
     }
 
-
     public static boolean registerUser(String username, String email, String password, String role, String firstName,
             String lastName) {
         String hashedPassword = PasswordHasher.hashPassword(password);
@@ -63,7 +60,7 @@ public class DatabaseManager {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) { // MySQL error code for duplicate
+            if (e.getErrorCode() == 1062) {
                 System.err.println("Username or Email already exists.");
             } else {
                 e.printStackTrace();

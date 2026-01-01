@@ -1,4 +1,3 @@
--- Insert Users
 INSERT INTO USERS (Username, Email, PasswordHash, UserRole, FirstName, LastName)
 VALUES
 ('arda_admin', 'arda.ayas@ozu.edu.tr', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'Administrator', 'Arda', 'Ayas'),

@@ -17,12 +17,12 @@ public class ViewCatalogWindow extends JFrame {
         this.orderService = new OrderService();
 
         setTitle("All Catalogs");
-        setSize(800, 600);
+        setSize(1000, 600);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        String[] columns = {"ID", "Product", "Price", "Stock", "Seller"};
+        String[] columns = { "ID", "Product", "Description", "Price", "Stock", "Seller", "Rating" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -30,14 +30,23 @@ public class ViewCatalogWindow extends JFrame {
             }
         };
         table = new JTable(model);
+        table.setRowHeight(25);
+        table.getColumnModel().getColumn(2).setPreferredWidth(200);
 
         loadData();
 
+        JPanel buttonPanel = new JPanel();
         JButton btnAdd = new JButton("Add Selected to Cart");
+        JButton btnReviews = new JButton("View Reviews");
+
         btnAdd.addActionListener(e -> addToCartAction());
+        btnReviews.addActionListener(e -> showReviewsAction());
+
+        buttonPanel.add(btnAdd);
+        buttonPanel.add(btnReviews);
 
         add(new JScrollPane(table), BorderLayout.CENTER);
-        add(btnAdd, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private void loadData() {
@@ -57,16 +66,46 @@ public class ViewCatalogWindow extends JFrame {
 
         int productId = (int) model.getValueAt(row, 0);
         String quantityStr = JOptionPane.showInputDialog(this, "Enter Quantity:");
-        if (quantityStr == null) return;
+        if (quantityStr == null)
+            return;
 
         try {
             int qty = Integer.parseInt(quantityStr);
             orderService.addToCart(currentUserId, productId, qty);
             JOptionPane.showMessageDialog(this, "Added to cart!");
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid number.");
+            JOptionPane.showMessageDialog(this, "Please enter a valid number.");
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Number must be more than 0");
+            JOptionPane.showMessageDialog(this, "Error adding to cart: " + ex.getMessage());
         }
+    }
+
+    private void showReviewsAction() {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a product to see reviews.");
+            return;
+        }
+
+        int productId = (int) model.getValueAt(row, 0);
+        String productName = (String) model.getValueAt(row, 1);
+        List<Object[]> reviews = catalogService.getProductReviews(productId);
+
+        if (reviews.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No reviews yet for " + productName);
+            return;
+        }
+
+        String[] revCols = { "Rating", "Comment", "User", "Date" };
+        DefaultTableModel revModel = new DefaultTableModel(revCols, 0);
+        for (Object[] rev : reviews) {
+            revModel.addRow(rev);
+        }
+
+        JTable revTable = new JTable(revModel);
+        JScrollPane scroll = new JScrollPane(revTable);
+        scroll.setPreferredSize(new Dimension(500, 300));
+
+        JOptionPane.showMessageDialog(this, scroll, "Reviews for " + productName, JOptionPane.PLAIN_MESSAGE);
     }
 }

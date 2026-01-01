@@ -13,21 +13,17 @@ public class SellerDashboard extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main Container
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
         mainPanel.setBackground(new Color(240, 240, 240));
 
-        // Welcome Label
         JLabel welcomeLabel = new JLabel("Seller Panel - " + username);
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         mainPanel.add(welcomeLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Menu Buttons
-        // Menu Buttons
         JButton manageBtn = createMenuButton("Manage Catalog & Products");
         manageBtn.addActionListener(e -> new ManageProductsWindow(sellerId).setVisible(true));
         mainPanel.add(manageBtn);
@@ -43,7 +39,6 @@ public class SellerDashboard extends JFrame {
         mainPanel.add(statsBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Logout Button
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutBtn.setMaximumSize(new Dimension(400, 40));
@@ -60,7 +55,7 @@ public class SellerDashboard extends JFrame {
     private JButton createMenuButton(String text) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(450, 80)); // Large buttons as in image
+        button.setMaximumSize(new Dimension(450, 80));
         button.setFont(new Font("SansSerif", Font.BOLD, 16));
         button.setFocusPainted(false);
         return button;
