@@ -46,7 +46,7 @@ public class CustomerDashboard extends JFrame {
         mainPanel.add(btnStats);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Logout Button
+
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutBtn.setMaximumSize(new Dimension(400, 40));

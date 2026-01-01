@@ -24,7 +24,7 @@ public class RegistrationWindow extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Title
+
         JLabel titleLabel = new JLabel("Create Account", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         gbc.gridx = 0;
@@ -36,7 +36,6 @@ public class RegistrationWindow extends JFrame {
         gbc.gridwidth = 1;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // First Name
         gbc.gridy = 1;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("First Name:"), gbc);
@@ -44,7 +43,7 @@ public class RegistrationWindow extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(firstNameField, gbc);
 
-        // Last Name
+
         gbc.gridy = 2;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("Last Name:"), gbc);
@@ -52,7 +51,7 @@ public class RegistrationWindow extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(lastNameField, gbc);
 
-        // Username
+
         gbc.gridy = 3;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("Username:"), gbc);
@@ -60,7 +59,6 @@ public class RegistrationWindow extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(usernameField, gbc);
 
-        // Email
         gbc.gridy = 4;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("Email:"), gbc);
@@ -68,7 +66,7 @@ public class RegistrationWindow extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(emailField, gbc);
 
-        // Password
+
         gbc.gridy = 5;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("Password:"), gbc);
@@ -76,7 +74,7 @@ public class RegistrationWindow extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(passwordField, gbc);
 
-        // Role
+
         gbc.gridy = 6;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("I am a:"), gbc);
@@ -85,7 +83,7 @@ public class RegistrationWindow extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(roleComboBox, gbc);
 
-        // Buttons
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
         registerButton = new JButton("Register");
         registerButton.setPreferredSize(new Dimension(100, 35));
@@ -102,7 +100,7 @@ public class RegistrationWindow extends JFrame {
 
         add(mainPanel);
 
-        // Listeners
+
         registerButton.addActionListener(e -> handleRegistration());
 
         backButton.addActionListener(e -> {
@@ -124,14 +122,14 @@ public class RegistrationWindow extends JFrame {
             return;
         }
 
-        // Basic Email Check
+
         if (!email.contains("@") || !email.contains(".")) {
             JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // --- REAL DATABASE LOGIC ---
+
         boolean success = DatabaseManager.registerUser(username, email, password, role, firstName, lastName);
 
         if (success) {

@@ -1,15 +1,14 @@
 import java.sql.*;
 
 public class DatabaseManager {
-    // Database credentials - Update these to match your MySQL configuration
-    private static final String URL = "jdbc:mysql://192.168.1.152:3306/ecommerce_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "_9q@2$KNf>xpVyW-;5)o"; // Update this!
 
-    // Static connection method
+    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_db";
+    private static final String USER = "root";
+    private static final String PASSWORD = "asdnjdbjhdbnsajkdb2193857**189AA";
+
+
     public static Connection getConnection() throws SQLException {
         try {
-            // Loading the driver (optional in newer JDBC versions but good practice)
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.err.println("MySQL Driver not found.");
@@ -17,7 +16,7 @@ public class DatabaseManager {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    // AUTHENTICATION LOGIC
+
     public static User authenticate(String username, String password) {
         String hashedPassword = PasswordHasher.hashPassword(password);
         String query = "SELECT UserID, Username, UserRole, FirstName, LastName FROM USERS WHERE Username = ? AND PasswordHash = ?";
@@ -44,7 +43,7 @@ public class DatabaseManager {
         return null;
     }
 
-    // REGISTRATION LOGIC
+
     public static boolean registerUser(String username, String email, String password, String role, String firstName,
             String lastName) {
         String hashedPassword = PasswordHasher.hashPassword(password);
@@ -64,7 +63,6 @@ public class DatabaseManager {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            // Handle duplicate entry errors specifically if needed
             if (e.getErrorCode() == 1062) { // MySQL error code for duplicate
                 System.err.println("Username or Email already exists.");
             } else {

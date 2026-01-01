@@ -20,16 +20,24 @@ public class AdminDashboard extends JFrame {
         mainPanel.add(welcomeLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        mainPanel.add(createMenuButton("Manage Users"));
+        JButton manageuserBtn = createMenuButton("Manage Users");
+        manageuserBtn.addActionListener(e -> new AdminUsersWindow().setVisible(true));
+        mainPanel.add(manageuserBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("Manage Categories"));
+        JButton manageCategoriesBtn = createMenuButton("Manage Categories");
+        manageCategoriesBtn.addActionListener(e -> new AdminCategoriesWindow().setVisible(true));
+        mainPanel.add(manageCategoriesBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("View Shipments"));
+        JButton viewShipmentsBtn = createMenuButton("View Shipments");
+        viewShipmentsBtn.addActionListener(e -> new AdminShipmentsWindow().setVisible(true));
+        mainPanel.add(viewShipmentsBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        mainPanel.add(createMenuButton("System Statistics"));
+        JButton adminstatsBtn = createMenuButton("System Statistics");
+        adminstatsBtn.addActionListener(e -> new AdminStatsWindow().setVisible(true));
+        mainPanel.add(adminstatsBtn);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
         JButton logoutBtn = new JButton("Logout");

@@ -66,7 +66,7 @@ public class ViewCatalogWindow extends JFrame {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number.");
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Number must be more than 0");
         }
     }
 }
