@@ -1,10 +1,14 @@
 import java.sql.*;
 
 public class DatabaseManager {
-
-    private static final String URL = "jdbc:mysql://192.168.1.164:3306/ecommerce_db";
+    // We used hashing algorithm and we don't put passwords as plain text on database.
+    // ali_yilmaz - customer123 - Customer
+    // arda_admin - admin123 - Admin
+    // bora_k - seller123 - Seller
+    // ayse_demir - customer456 - Customer
+    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "_9q@2$KNf>xpVyW-;5)o";
+    private static final String PASSWORD = "password";
 
     public static Connection getConnection() throws SQLException {
         try {

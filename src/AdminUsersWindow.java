@@ -77,7 +77,7 @@ public class AdminUsersWindow extends JFrame {
 
         int id = (int) model.getValueAt(row, 0);
         JTextField emailF = new JTextField(model.getValueAt(row, 2).toString());
-        JPasswordField passF = new JPasswordField(); // New password field
+        JPasswordField passF = new JPasswordField();
         String[] roles = { "Customer", "Seller", "Administrator" };
         JComboBox<String> roleB = new JComboBox<>(roles);
         roleB.setSelectedItem(model.getValueAt(row, 3).toString());
