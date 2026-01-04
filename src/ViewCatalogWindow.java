@@ -22,7 +22,7 @@ public class ViewCatalogWindow extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        String[] columns = { "ID", "Product", "Description", "Price", "Stock", "Seller", "Rating" };
+        String[] columns = { "ID", "Product", "Category", "Description", "Price", "Stock", "Seller", "Rating" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -31,7 +31,7 @@ public class ViewCatalogWindow extends JFrame {
         };
         table = new JTable(model);
         table.setRowHeight(25);
-        table.getColumnModel().getColumn(2).setPreferredWidth(200);
+        table.getColumnModel().getColumn(3).setPreferredWidth(200);
 
         loadData();
 
@@ -71,6 +71,10 @@ public class ViewCatalogWindow extends JFrame {
 
         try {
             int qty = Integer.parseInt(quantityStr);
+            if (qty <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be greater than zero.");
+                return;
+            }
             orderService.addToCart(currentUserId, productId, qty);
             JOptionPane.showMessageDialog(this, "Added to cart!");
         } catch (NumberFormatException ex) {

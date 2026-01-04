@@ -20,7 +20,7 @@ public class ViewCartWindow extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        String[] columns = {"Product", "Quantity", "Price", "Total"};
+        String[] columns = { "Product", "Quantity", "Price", "Total" };
         model = new DefaultTableModel(columns, 0);
         JTable table = new JTable(model);
 
@@ -29,11 +29,18 @@ public class ViewCartWindow extends JFrame {
         totalLabel.setFont(new Font("Arial", Font.BOLD, 14));
         totalLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        JButton btnDeleteAll = new JButton("Delete All");
+        btnDeleteAll.addActionListener(e -> deleteAllAction());
+
         JButton btnSubmit = new JButton("Submit Order");
         btnSubmit.addActionListener(e -> submitOrderAction());
 
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(btnDeleteAll);
+        buttonPanel.add(btnSubmit);
+
         bottomPanel.add(totalLabel, BorderLayout.WEST);
-        bottomPanel.add(btnSubmit, BorderLayout.EAST);
+        bottomPanel.add(buttonPanel, BorderLayout.EAST);
 
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -58,12 +65,32 @@ public class ViewCartWindow extends JFrame {
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to submit this order?", "Confirm", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to submit this order?", "Confirm",
+                JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 orderService.submitOrder(currentUserId);
                 JOptionPane.showMessageDialog(this, "Order Submitted Successfully!");
                 this.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void deleteAllAction() {
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Cart is empty.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete all items from your cart?",
+                "Confirm Delete All", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                orderService.deleteAllFromCart(currentUserId);
+                JOptionPane.showMessageDialog(this, "Cart cleared successfully!");
+                loadCart();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }

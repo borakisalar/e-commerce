@@ -5,6 +5,9 @@ import java.util.List;
 public class OrderService {
 
     public void addToCart(int customerId, int productId, int quantity) throws SQLException, IllegalArgumentException {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
+        }
         Connection conn = null;
         try {
             conn = DatabaseManager.getConnection();
@@ -106,6 +109,15 @@ public class OrderService {
             ex.printStackTrace();
         }
         return cartItems;
+    }
+
+    public void deleteAllFromCart(int customerId) throws SQLException {
+        String query = "DELETE FROM ORDERS WHERE CustomerID = ? AND OrderStatus = 'pending'";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, customerId);
+            stmt.executeUpdate();
+        }
     }
 
     public void submitOrder(int customerId) throws SQLException {

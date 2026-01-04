@@ -6,16 +6,17 @@ public class CatalogService {
 
     public List<Object[]> getAvailableProducts() {
         List<Object[]> products = new ArrayList<>();
-        String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.StockQuantity, u.Username AS Seller, "
+        String query = "SELECT p.ProductID, p.ProductName, cat.CategoryName, p.Description, p.Price, p.StockQuantity, u.Username AS Seller, "
                 +
                 "AVG(r.Rating) as AvgRating, COUNT(r.ReviewID) as ReviewCount " +
                 "FROM PRODUCTS p " +
                 "JOIN CATALOGS c ON p.CatalogID = c.CatalogID " +
                 "JOIN USERS u ON c.SellerID = u.UserID " +
+                "LEFT JOIN CATEGORIES cat ON p.CategoryID = cat.CategoryID " +
                 "LEFT JOIN ORDER_ITEMS oi ON p.ProductID = oi.ProductID " +
                 "LEFT JOIN REVIEWS r ON oi.OrderItemID = r.OrderItemID " +
                 "WHERE p.StockQuantity > 0 " +
-                "GROUP BY p.ProductID, p.ProductName, p.Description, p.Price, p.StockQuantity, u.Username";
+                "GROUP BY p.ProductID, p.ProductName, cat.CategoryName, p.Description, p.Price, p.StockQuantity, u.Username";
 
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query);
@@ -29,6 +30,7 @@ public class CatalogService {
                 products.add(new Object[] {
                         rs.getInt("ProductID"),
                         rs.getString("ProductName"),
+                        rs.getString("CategoryName"),
                         rs.getString("Description"),
                         rs.getBigDecimal("Price"),
                         rs.getInt("StockQuantity"),

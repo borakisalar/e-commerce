@@ -147,12 +147,84 @@ public class SellerService {
     }
 
     public void updateOrderStatus(int orderId, String status) throws SQLException {
-        String update = "UPDATE ORDERS SET OrderStatus = ? WHERE OrderID = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(update)) {
-            stmt.setString(1, status);
-            stmt.setInt(2, orderId);
-            stmt.executeUpdate();
+        Connection conn = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            conn.setAutoCommit(false);
+
+            String update = "UPDATE ORDERS SET OrderStatus = ? WHERE OrderID = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(update)) {
+                stmt.setString(1, status);
+                stmt.setInt(2, orderId);
+                stmt.executeUpdate();
+            }
+
+            if ("shipped".equalsIgnoreCase(status)) {
+                double amount = 0;
+                String getAmount = "SELECT TotalAmount FROM ORDERS WHERE OrderID = ?";
+                try (PreparedStatement amtStmt = conn.prepareStatement(getAmount)) {
+                    amtStmt.setInt(1, orderId);
+                    try (ResultSet rs = amtStmt.executeQuery()) {
+                        if (rs.next()) {
+                            amount = rs.getDouble("TotalAmount");
+                        }
+                    }
+                }
+
+                String checkShipment = "SELECT COUNT(*) FROM SHIPMENTS WHERE OrderID = ?";
+                boolean shipExists = false;
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkShipment)) {
+                    checkStmt.setInt(1, orderId);
+                    try (ResultSet rs = checkStmt.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) > 0) {
+                            shipExists = true;
+                        }
+                    }
+                }
+
+                if (!shipExists) {
+                    String insertShipment = "INSERT INTO SHIPMENTS (OrderID, TrackingNumber, ShipmentStatus) VALUES (?, ?, ?)";
+                    try (PreparedStatement shipStmt = conn.prepareStatement(insertShipment)) {
+                        shipStmt.setInt(1, orderId);
+                        shipStmt.setString(2, "TRK" + System.currentTimeMillis() + orderId);
+                        shipStmt.setString(3, "shipped");
+                        shipStmt.executeUpdate();
+                    }
+                }
+
+                String checkPayment = "SELECT COUNT(*) FROM PAYMENTS WHERE OrderID = ?";
+                boolean payExists = false;
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkPayment)) {
+                    checkStmt.setInt(1, orderId);
+                    try (ResultSet rs = checkStmt.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) > 0) {
+                            payExists = true;
+                        }
+                    }
+                }
+
+                if (!payExists) {
+                    String insertPayment = "INSERT INTO PAYMENTS (OrderID, Amount, PaymentMethod, PaymentStatus) VALUES (?, ?, ?, ?)";
+                    try (PreparedStatement payStmt = conn.prepareStatement(insertPayment)) {
+                        payStmt.setInt(1, orderId);
+                        payStmt.setDouble(2, amount);
+                        payStmt.setString(3, "credit card");
+                        payStmt.setString(4, "completed");
+                        payStmt.executeUpdate();
+                    }
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException ex) {
+            if (conn != null) {
+                conn.rollback();
+            }
+            throw ex;
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
